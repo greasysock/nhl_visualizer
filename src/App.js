@@ -1,9 +1,9 @@
 import React from 'react'
-import TeamsGraph from './pages/TeamsGraph'
+import RootTransition from './pages/RootTransition'
 
 function App() {
   return (
-    <TeamsGraph/>
+    <RootTransition/>
   );
 }
 

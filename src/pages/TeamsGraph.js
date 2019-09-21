@@ -1,10 +1,9 @@
-import React, {useEffect} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
+import React from 'react'
+import {useSelector} from 'react-redux'
 import Graph from 'react-graph-vis'
-import {fetchTeams, fetchGames} from '../actions'
+import useTeams from '../hooks/useTeams'
+import {nhlLogoPath} from '../helpers'
 import './TeamsGraph.css'
-
-const teamFilter = [8, 10, 12, 17]
 
 const renderNodes = (teamNodes=[]) => {
     return teamNodes.map((team)=>{
@@ -31,29 +30,9 @@ const renderEdges = (gameLinks=[], teams={}) => {
     )
 }
 
-const nhlLogoPath = teamId => {
-    const teamLogoPath = `https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${teamId}_dark.svg`
-    return teamLogoPath
-}
-
 const TeamsGraph = () => {
-    const dispatch = useDispatch()
-    const teams = useSelector(state=>{
-        const filteredTeams = {}
-        teamFilter.forEach(t=>{
-            if(state.teams[t]){
-                filteredTeams[t] = state.teams[t]
-            }
-        })
-        return filteredTeams
-    })
+    const teams = useTeams()
     const games = useSelector(state=>state.games)
-
-    useEffect(()=>{
-        dispatch(fetchTeams())
-        dispatch(fetchGames())
-    }, [dispatch])
-
     const nodes = renderNodes(Object.values(teams))
     const edges = renderEdges(Object.values(games), teams)
 
