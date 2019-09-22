@@ -1,6 +1,8 @@
 import {
     FETCH_TEAM,
-    FETCH_TEAMS
+    FETCH_TEAMS,
+    SELECT_TEAM,
+    REMOVE_TEAM
 } from './types'
 
 export const fetchTeams = () => async (dispatch, getState) => {
@@ -10,4 +12,12 @@ export const fetchTeams = () => async (dispatch, getState) => {
         const jsonBack = await response.json()
         dispatch({type: FETCH_TEAMS, payload: jsonBack.teams})
     }
+}
+
+export const selectTeam = teamId => {
+    return {type: SELECT_TEAM, payload: teamId}
+}
+
+export const removeTeam = teamId => {
+    return {type: REMOVE_TEAM, payload: teamId}
 }
