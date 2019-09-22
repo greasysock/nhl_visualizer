@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 import { useTransition, animated, useSpring } from 'react-spring'
-import {setPageAmount, setPage, fetchGames, fetchTeams} from '../actions'
+import {setPageAmount, setPage, fetchGames, fetchTeams, setPageName} from '../actions'
+import ScrollNavigation from '../components/ScrollNavigation'
 
 import TeamsGraph from './TeamsGraph'
 import TeamsSelection from './TeamsSelection'
@@ -18,46 +19,16 @@ const pages = [
     pageWrap(TeamsResults)
 ]
 
-const ScrollCircle = ({page=0}) =>{
-    const dispatch = useDispatch()
-    const currentPage = useSelector(s=>s.pagesConfig.currentPage)
-    const active = currentPage === page
-    const [props, set, stop] = useSpring(() => ({opacity: 1}))
+const pageNames = [
+    'CHOOSE TEAMS',
+    'GRAPH',
+    'RESULTS'
+]
 
-    set({opacity: active ? 1 : .2})
-    stop()
-
-    return (
-        <animated.div 
-            style={{...props,
-                width: '1.2vh', 
-                height: '1.2vh', 
-                backgroundColor: 'rgb(173,173,173)', 
-                borderRadius: '50%',
-                marginBottom: '.5vh'}}
-            onClick={()=>{dispatch(setPage(page))}}
-        />
-    )
-}
-
-const ScrollNavigation = () => {
-    const totalPages = useSelector(state=>state.pagesConfig.totalPages)
-    const renderScrollCircles = () => {
-        return Array(totalPages).fill().map((_, i) => <ScrollCircle page={i} key={i}/>)
+const setupPageNames = dispatch => {
+    for(let i = 0; i<pageNames.length; i++){
+        dispatch(setPageName(pageNames[i], i))
     }
-    return (
-        <div style={{
-            position: 'fixed',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            left: '1vw',
-            height: '100vh',
-            zIndex: '100'
-        }}>
-            {renderScrollCircles()}
-        </div>
-    )
 }
 
 const RootTransition = () => {
@@ -69,7 +40,8 @@ const RootTransition = () => {
         dispatch(setPageAmount(pages.length))
         dispatch(fetchTeams())
         dispatch(fetchGames())
-    },[dispatch])
+        setupPageNames(dispatch)
+    },[dispatch, setupPageNames])
     useEffect(()=>{
         if(currentPage > lastCurrentPage){
             setFlowDirection(-1)

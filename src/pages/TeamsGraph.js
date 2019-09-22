@@ -2,6 +2,7 @@ import React from 'react'
 import {useSelector} from 'react-redux'
 import Graph from 'react-graph-vis'
 import useTeams from '../hooks/useTeams'
+import useGames from '../hooks/useGames'
 import {nhlLogoPath} from '../helpers'
 import './TeamsGraph.css'
 
@@ -19,8 +20,7 @@ const renderNodes = (teamNodes=[]) => {
 }
 
 const renderEdges = (gameLinks=[], teams={}) => {
-    const filteredGames = gameLinks.filter((game)=>teams[game.winnerTeamId] && teams[game.loserTeamId])
-    return filteredGames.map((game)=>{
+    return gameLinks.map((game)=>{
         return{
             from:game.winnerTeamId,
             to:game.loserTeamId,
@@ -32,9 +32,9 @@ const renderEdges = (gameLinks=[], teams={}) => {
 
 const TeamsGraph = () => {
     const teams = useTeams()
-    const games = useSelector(state=>state.games)
+    const games = useGames()
     const nodes = renderNodes(Object.values(teams))
-    const edges = renderEdges(Object.values(games), teams)
+    const edges = renderEdges(games, teams)
 
     const graph = {
         nodes,edges
