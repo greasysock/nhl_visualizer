@@ -15,8 +15,8 @@ const ScrollCircle = ({page=0}) =>{
     return (
         <animated.div 
             style={{...props,
-                width: '1.2vh', 
-                height: '1.2vh', 
+                width: '3.2vh', 
+                height: '3.2vh', 
                 backgroundColor: 'rgb(100,100,100)', 
                 borderRadius: '50%',
                 marginBottom: '.7vh'}}
@@ -25,9 +25,9 @@ const ScrollCircle = ({page=0}) =>{
                 style={{
                     width: '10vw',
                     position: "relative",
-                    left: '1vw',
-                    fontSize: '1vw',
-                    bottom: '.1vh',
+                    left: '2vw',
+                    fontSize: '1.5vh',
+                    bottom: '-.9vh',
                     color: 'rgb(100,100,100)'
                 }}
             >

@@ -2,7 +2,9 @@ import React from 'react'
 import {transpose, multiply} from 'mathjs'
 import rref from 'rref'
 import useTeams from '../hooks/useTeams'
+import useTeam from '../hooks/useTeam'
 import useGames from '../hooks/useGames'
+import {nhlLogoPath} from '../helpers'
 
 const mapGameDataToMatrix = (games, teams) => {
     //Declare index map for team
@@ -34,7 +36,6 @@ const mapGameDataToMatrix = (games, teams) => {
 }
 
 // A=[a,b,c] B=[d] resultant= [a,b,c,d]
-
 const addMatrixToEndMatrix = (A=[], B=[]) => {
     const resultant = []
     for(let i = 0; i<A.length; i++){
@@ -46,7 +47,7 @@ const addMatrixToEndMatrix = (A=[], B=[]) => {
     return resultant
 }
 
-// Adds [ 1, 1, 1, ... , 0 ] to final row to force solve
+// Adds [ 1, 1, 1, ... , 0 ] to final row to force solve. a + b + c + d + ... = 0
 const makeSolve = (A=[]) => {
     const rowLength = A[0].length
     const lastRow = Array(rowLength).fill(1)
@@ -55,6 +56,7 @@ const makeSolve = (A=[]) => {
     return A
 }
 
+// Adds matrix B to after the final column in matrix A. Replaces final row to force solve. Solves with rref and pulls results outs.
 const rrefAndPullResults = (A=[], B=[])=>{
     const resultsMatrix = rref(makeSolve(addMatrixToEndMatrix(A,B)))
     return resultsMatrix.map((r)=>{
@@ -77,13 +79,81 @@ const processWithMasseyMethod = (games, teams) => {
     return teamResults
 }
 
+const merge = (left, right) =>{
+    const result = []
+    let leftIndex = 0
+    let rightIndex = 0
+    while(leftIndex < left.length && rightIndex < right.length){
+        if(left[leftIndex].rank > right[rightIndex].rank){
+            result.push(left[leftIndex])
+            leftIndex++
+        } else{
+            result.push(right[rightIndex])
+            rightIndex++
+        }
+    }
+    return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex))
+}
+
+const mergeSortComponents = (array=[]) => {
+    if(array.length===1){
+        return array
+    }
+    const center = Math.floor(array.length/2)
+    const right = array.slice(center)
+    const left = array.slice(0, center)
+    
+    return (
+        merge(mergeSortComponents(left), mergeSortComponents(right))
+    )
+}
+
+const TeamRank = ({teamId, rank}) => {
+    const {team} = useTeam(teamId)
+    
+    return (
+        <div
+        style = {{
+            width: '10vw',
+            height: '10vw',
+            margin: '5vw'
+        }}
+        >
+            <img style={{width: '10vw', height: '10vw'}} src={nhlLogoPath(teamId)}/>
+            {team.name}
+            <div>{rank}</div>
+        </div>
+    )
+
+}
+
 const TeamsResults = () => {
     const games = useGames()
     const teams = useTeams()
     const masseyResults = processWithMasseyMethod(games, teams)
-    console.log(masseyResults)
+
+    const renderTeamRanks = () => {
+        
+        const unorderedComponents =  Object.values(teams).map((t)=>{
+            return {component:<TeamRank teamId={t.id} rank={masseyResults[t.id]} key={t.id}/>, rank: masseyResults[t.id]}
+        })
+        const orderedComponents = mergeSortComponents(unorderedComponents)
+        return orderedComponents.map((c)=>c.component)
+    }
+
     return (
-        <div>Results</div>
+        <div>
+            Massey's Method
+            <div
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-evenly'
+                }}
+            >
+            {renderTeamRanks()}
+            </div>
+        </div>
     )
 }
 
