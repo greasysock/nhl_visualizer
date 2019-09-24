@@ -35,5 +35,50 @@ export const mapResultsBackToTeams = (teams, results, teamsIndexMap) => {
     return teamResults
 }
 
+const merge = (left, right) =>{
+    const result = []
+    let leftIndex = 0
+    let rightIndex = 0
+    while(leftIndex < left.length && rightIndex < right.length){
+        if(left[leftIndex].rank > right[rightIndex].rank){
+            result.push(left[leftIndex])
+            leftIndex++
+        } else{
+            result.push(right[rightIndex])
+            rightIndex++
+        }
+    }
+    return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex))
+}
+
+export const mergeSortComponents = (array=[]) => {
+    if(array.length===1){
+        return array
+    }
+    const center = Math.floor(array.length/2)
+    const right = array.slice(center)
+    const left = array.slice(0, center)
+    
+    return (
+        merge(mergeSortComponents(left), mergeSortComponents(right))
+    )
+}
+
+export const nullWeight = (value=0) => {return 1}
+
+const NHL_SEASON_START = "2018-10-03"
+const NHL_SEASON_END = "2019-06-12"
+export const dateWeight = (date) => {
+    const seasonStart = new Date(NHL_SEASON_START).getTime()
+    const seasonEnd = new Date(NHL_SEASON_END).getTime()
+    const seasonDuration = seasonEnd - seasonStart
+    const elapsedTime = date.getTime() - seasonStart
+    const gameWeight = (elapsedTime/seasonDuration) + .5
+    if(gameWeight>1){return 1}
+
+    return gameWeight
+}
+
+
 export * from './masseyMethod'
 export * from './colleyMethod'

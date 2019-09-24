@@ -26,7 +26,7 @@ export default (games={}, action) => {
             const newGames = {}
             action.payload.forEach((d)=>{
                 d.games.forEach((g)=>{
-                    newGames[g.gamePk] = {...resolveWinnerLoser(g.teams.home, g.teams.away), gameId: g.gamePk}
+                    newGames[g.gamePk] = {...resolveWinnerLoser(g.teams.home, g.teams.away), gameId: g.gamePk, gameDate: new Date(g.gameDate)}
                 })
             })
             return {...games, ...newGames}

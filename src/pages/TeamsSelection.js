@@ -4,6 +4,7 @@ import {useSpring, animated} from 'react-spring'
 import useTeam from '../hooks/useTeam'
 import {nhlLogoPath} from '../helpers'
 import ContentWrapper from '../components/ContentWrapper'
+import TitleWrap from '../components/TitleWrap'
 
 const TeamSelection = ({teamId}) => {
     const {team, teamSelected, selectTeam, removeTeam} = useTeam(teamId)
@@ -37,6 +38,7 @@ const TeamsSelection = () => {
     }
     return (
         <ContentWrapper>
+            <TitleWrap title="NHL Season 2018-19 Team Analysis"/>
             <div style={{
                 display: 'flex',
                 justifyContent: 'space-evenly',

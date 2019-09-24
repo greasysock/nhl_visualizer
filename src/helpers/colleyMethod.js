@@ -1,7 +1,7 @@
 
 import {identity, add, multiply} from 'mathjs'
 import rref from 'rref'
-import {addMatrixToEndMatrix, pullLastColumn, mapResultsBackToTeams} from '../helpers'
+import {addMatrixToEndMatrix, pullLastColumn, mapResultsBackToTeams, nullWeight, dateWeight} from '../helpers'
 
 const initArrayAndRatioMap = (teams) => {
     const teamLength = Object.keys(teams).length
@@ -20,7 +20,7 @@ Iterate over Games and map total games played + 2 to team and -1 for non-playing
 [[3,-1,-1,-1], [-1,5,-1,-1], [-1,-1,-1]]
 */
 
-const mapGameDataToMatrix = (games, teams) => {
+const mapGameDataToMatrix = (games, teams, weightMethod=nullWeight) => {
     //Declare index map for team
     const teamsIndexMap = {}
 
@@ -31,17 +31,17 @@ const mapGameDataToMatrix = (games, teams) => {
     })
 
     const {valueMatrix, ratioMap} = initArrayAndRatioMap(teams)
-    const addOneAtTeamId = (teamId) => {
+    const addOneAtTeamId = (teamId, game) => {
         const index = teamsIndexMap[teamId]
-        valueMatrix[index][index]++
+        valueMatrix[index][index] += weightMethod(game.gameDate)
     }
-    const addWinToMap = (teamId) => {
+    const addWinToMap = (teamId, game) => {
         const index = teamsIndexMap[teamId]
-        ratioMap[index].win++
+        ratioMap[index].win += weightMethod(game.gameDate)
     }
-    const addLoseToMap = (teamId) => {
+    const addLoseToMap = (teamId, game) => {
         const index = teamsIndexMap[teamId]
-        ratioMap[index].lose++
+        ratioMap[index].lose += weightMethod(game.gameDate)
     }
 
     // Takes win loss ratio and creates matrix of n length
@@ -52,10 +52,10 @@ const mapGameDataToMatrix = (games, teams) => {
     }
 
     games.forEach(game=>{
-        addOneAtTeamId(game.winnerTeamId)
-        addOneAtTeamId(game.loserTeamId)
-        addWinToMap(game.winnerTeamId)
-        addLoseToMap(game.loserTeamId)
+        addOneAtTeamId(game.winnerTeamId, game)
+        addOneAtTeamId(game.loserTeamId, game)
+        addWinToMap(game.winnerTeamId, game)
+        addLoseToMap(game.loserTeamId, game)
     })
     const identityMatrix = multiply(identity(valueMatrix.length), 3)
     const finalTotalMatrix = add(valueMatrix, identityMatrix)
@@ -63,8 +63,8 @@ const mapGameDataToMatrix = (games, teams) => {
 
     return {finalTotalMatrix, finalRatioMatrix, teamsIndexMap}
 }
-export const colleyMethod = (games, teams) => {
-    const {finalRatioMatrix, finalTotalMatrix, teamsIndexMap} = mapGameDataToMatrix(games, teams)
+export const colleyMethod = (games, teams, weightMethod=nullWeight) => {
+    const {finalRatioMatrix, finalTotalMatrix, teamsIndexMap} = mapGameDataToMatrix(games, teams, weightMethod)
     const combinedMatrix = addMatrixToEndMatrix(finalTotalMatrix.toArray(), finalRatioMatrix)
     const resultsMatrix = rref(combinedMatrix)
     const results = pullLastColumn(resultsMatrix)
@@ -73,5 +73,5 @@ export const colleyMethod = (games, teams) => {
 }
 
 export const weightedColleyMethod = (games, teams) => {
-    return {}
+    return colleyMethod(games, teams, dateWeight )
 }

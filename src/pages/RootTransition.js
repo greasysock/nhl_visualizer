@@ -7,7 +7,7 @@ import SelectionCounter from '../components/SelectionCounter'
 
 import TeamsGraph from './TeamsGraph'
 import TeamsSelection from './TeamsSelection'
-import TeamsResults from './TeamsResults'
+import ResultsIndex from './TeamsResults/ResultsIndex'
 import usePrevious from '../hooks/usePrevious'
 
 const pageWrap = Component => {
@@ -17,7 +17,7 @@ const pageWrap = Component => {
 const pages = [
     pageWrap(TeamsSelection),
     pageWrap(TeamsGraph),
-    pageWrap(TeamsResults)
+    pageWrap(ResultsIndex)
 ]
 
 const pageNames = [
