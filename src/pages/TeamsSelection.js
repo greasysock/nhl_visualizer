@@ -3,6 +3,7 @@ import {useSelector} from 'react-redux'
 import {useSpring, animated} from 'react-spring'
 import useTeam from '../hooks/useTeam'
 import {nhlLogoPath} from '../helpers'
+import ContentWrapper from '../components/ContentWrapper'
 
 const TeamSelection = ({teamId}) => {
     const {team, teamSelected, selectTeam, removeTeam} = useTeam(teamId)
@@ -35,13 +36,15 @@ const TeamsSelection = () => {
         )
     }
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'space-evenly',
-            flexWrap: 'wrap'
-        }}>
-            {renderTeams()}
-        </div>
+        <ContentWrapper>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-evenly',
+                flexWrap: 'wrap'
+            }}>
+                {renderTeams()}
+            </div>
+        </ContentWrapper>
     )
 }
 

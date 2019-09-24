@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import { useTransition, animated, useSpring } from 'react-spring'
-import {setPageAmount, setPage, fetchGames, fetchTeams, setPageName} from '../actions'
+import { useTransition, animated } from 'react-spring'
+import {setPageAmount, fetchGames, fetchTeams, setPageName} from '../actions'
 import ScrollNavigation from '../components/ScrollNavigation'
+import SelectionCounter from '../components/SelectionCounter'
 
 import TeamsGraph from './TeamsGraph'
 import TeamsSelection from './TeamsSelection'
@@ -62,6 +63,7 @@ const RootTransition = () => {
                 const Page = pages[item]
                 return <Page key={key} style={props} />
             })}
+            <SelectionCounter/>
         </div>
     )
 }

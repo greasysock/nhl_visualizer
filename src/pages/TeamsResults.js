@@ -1,83 +1,10 @@
 import React from 'react'
-import {transpose, multiply} from 'mathjs'
-import rref from 'rref'
 import useTeams from '../hooks/useTeams'
 import useTeam from '../hooks/useTeam'
 import useGames from '../hooks/useGames'
-import {nhlLogoPath} from '../helpers'
+import {nhlLogoPath, masseyMethod, colleyMethod} from '../helpers'
+import ContentWrapper from '../components/ContentWrapper'
 
-const mapGameDataToMatrix = (games, teams) => {
-    //Declare index map for team
-    const teamsIndexMap = {}
-
-    let i = 0
-    Object.values(teams).forEach(t=>{
-        teamsIndexMap[t.id] = i
-        i++
-    })
-
-    /*
-      Map game data to matrix. games.map returns array of arrays => [[0,1,-1],[1,0,-1],[-1,1,0]]
-      Each item in the first array represents the outcome for each game.
-      Also creates gamesScore matrix => [[12],[3],[8]]
-    */
-    const gamesScore = []
-    let j = 0
-    const gameResultMatrix = games.map(game=>{
-        const gameOutcome = Array(i).fill(0)
-        gamesScore[j] = [game.difference]
-        gameOutcome[teamsIndexMap[game.winnerTeamId]] = 1
-        gameOutcome[teamsIndexMap[game.loserTeamId]] = -1
-        j++
-        return gameOutcome
-    })
-
-    return {outcome: gameResultMatrix, score: gamesScore, length: i, teamsIndexMap}
-}
-
-// A=[a,b,c] B=[d] resultant= [a,b,c,d]
-const addMatrixToEndMatrix = (A=[], B=[]) => {
-    const resultant = []
-    for(let i = 0; i<A.length; i++){
-        const rowA = A[i]
-        const rowB = B[i]
-
-        resultant.push(rowA.concat(rowB))
-    }
-    return resultant
-}
-
-// Adds [ 1, 1, 1, ... , 0 ] to final row to force solve. a + b + c + d + ... = 0
-const makeSolve = (A=[]) => {
-    const rowLength = A[0].length
-    const lastRow = Array(rowLength).fill(1)
-    lastRow[rowLength-1] = 0
-    A[A.length-1] = lastRow
-    return A
-}
-
-// Adds matrix B to after the final column in matrix A. Replaces final row to force solve. Solves with rref and pulls results outs.
-const rrefAndPullResults = (A=[], B=[])=>{
-    const resultsMatrix = rref(makeSolve(addMatrixToEndMatrix(A,B)))
-    return resultsMatrix.map((r)=>{
-        return r.slice(-1)[0]
-    })
-}
-
-const processWithMasseyMethod = (games, teams) => {
-    const {outcome, score, teamsIndexMap} = mapGameDataToMatrix(games, teams)
-    const outcomeT = transpose(outcome)
-    const lsOutcome = multiply(outcomeT, outcome)
-    const lsScore = multiply(outcomeT, score)
-
-    // Map results to team object
-    const teamResults = {}
-    const results = rrefAndPullResults(lsOutcome, lsScore)
-    Object.values(teams).forEach((t)=>{
-        teamResults[t.id] = results[teamsIndexMap[t.id]]
-    })
-    return teamResults
-}
 
 const merge = (left, right) =>{
     const result = []
@@ -108,20 +35,25 @@ const mergeSortComponents = (array=[]) => {
     )
 }
 
-const TeamRank = ({teamId, rank}) => {
+const TeamRank = ({teamId, rank, place}) => {
     const {team} = useTeam(teamId)
+    const pos = rank * -200
     
     return (
         <div
         style = {{
             width: '10vw',
             height: '10vw',
-            margin: '5vw'
+            margin: '5vw',
+            position: 'relative',
+            left: pos
+
         }}
         >
             <img style={{width: '10vw', height: '10vw'}} src={nhlLogoPath(teamId)}/>
             {team.name}
             <div>{rank}</div>
+            <div>{place}</div>
         </div>
     )
 
@@ -130,30 +62,40 @@ const TeamRank = ({teamId, rank}) => {
 const TeamsResults = () => {
     const games = useGames()
     const teams = useTeams()
-    const masseyResults = processWithMasseyMethod(games, teams)
+    const masseyResults = masseyMethod(games, teams)
+    const colleyResults = colleyMethod(games, teams)
 
     const renderTeamRanks = () => {
         
         const unorderedComponents =  Object.values(teams).map((t)=>{
-            return {component:<TeamRank teamId={t.id} rank={masseyResults[t.id]} key={t.id}/>, rank: masseyResults[t.id]}
+            return {componentProps:{ teamId:t.id, rank:colleyResults[t.id], key:t.id}, rank: colleyResults[t.id]}
         })
         const orderedComponents = mergeSortComponents(unorderedComponents)
-        return orderedComponents.map((c)=>c.component)
+        let level = 0
+        return orderedComponents.map((c)=>{
+            level++
+            return <TeamRank {...c.componentProps} place={level}/>
+        })
     }
 
     return (
-        <div>
+        <>
+        <ContentWrapper>
             Massey's Method
             <div
                 style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    justifyContent: 'space-evenly'
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    width: '100%',
+                    alignContent: 'center'
                 }}
             >
             {renderTeamRanks()}
             </div>
-        </div>
+        </ContentWrapper>
+        </>
     )
 }
 
