@@ -1,8 +1,8 @@
 import {transpose, multiply} from 'mathjs'
-import {addMatrixToEndMatrix, pullLastColumn, mapResultsBackToTeams} from '../helpers'
+import {addMatrixToEndMatrix, pullLastColumn, mapResultsBackToTeams, nullWeight, dateWeight} from '../helpers'
 import rref from 'rref'
 
-const mapGameDataToMatrix = (games, teams) => {
+const mapGameDataToMatrix = (games, teams, weightMethod=nullWeight) => {
     //Declare index map for team
     const teamsIndexMap = {}
 
@@ -21,9 +21,9 @@ const mapGameDataToMatrix = (games, teams) => {
     let j = 0
     const gameResultMatrix = games.map(game=>{
         const gameOutcome = Array(i).fill(0)
-        gamesScore[j] = [game.difference]
-        gameOutcome[teamsIndexMap[game.winnerTeamId]] = 1
-        gameOutcome[teamsIndexMap[game.loserTeamId]] = -1
+        gamesScore[j] = [game.difference] * weightMethod(game.gameDate)
+        gameOutcome[teamsIndexMap[game.winnerTeamId]] = weightMethod(game.gameDate)
+        gameOutcome[teamsIndexMap[game.loserTeamId]] = -weightMethod(game.gameDate)
         j++
         return gameOutcome
     })
@@ -59,5 +59,12 @@ export const masseyMethod = (games, teams) => {
 }
 
 export const weightedMasseyMethod = (games, teams) => {
-    return {}
+    const {outcome, score, teamsIndexMap} = mapGameDataToMatrix(games, teams, dateWeight)
+    const untouchedWeight = mapGameDataToMatrix(games, teams)
+    const transposedOfNonWeight = transpose(untouchedWeight.outcome)
+    const transposedByOutcome = multiply(transposedOfNonWeight, outcome)
+    const transposedByScore = multiply(transposedOfNonWeight, score)
+    const results = rrefAndPullResults(transposedByOutcome, transposedByScore)
+    const teamResults = mapResultsBackToTeams(teams, results, teamsIndexMap)
+    return teamResults
 }
