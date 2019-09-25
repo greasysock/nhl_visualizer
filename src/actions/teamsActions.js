@@ -2,7 +2,9 @@ import {
     FETCH_TEAM,
     FETCH_TEAMS,
     SELECT_TEAM,
-    REMOVE_TEAM
+    REMOVE_TEAM,
+    SELECT_TEAMS,
+    CLEAR_TEAMS
 } from './types'
 
 export const fetchTeams = () => async (dispatch, getState) => {
@@ -16,6 +18,14 @@ export const fetchTeams = () => async (dispatch, getState) => {
 
 export const selectTeam = teamId => {
     return {type: SELECT_TEAM, payload: teamId}
+}
+
+export const selectTeams = teamIds => {
+    return {type: SELECT_TEAMS, payload: teamIds}
+}
+
+export const clearTeams = () => {
+    return {type: CLEAR_TEAMS}
 }
 
 export const removeTeam = teamId => {

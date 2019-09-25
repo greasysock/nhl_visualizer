@@ -1,6 +1,8 @@
 export const FETCH_TEAMS = "FETCH_TEAMS"
 export const FETCH_TEAM = "FETCH_TEAM"
 export const SELECT_TEAM = "SELECT_TEAM"
+export const SELECT_TEAMS = "SELECT_TEAMS"
+export const CLEAR_TEAMS = "CLEAR_TEAMS"
 export const REMOVE_TEAM = "REMOVE_TEAM"
 export const FETCH_GAMES = "FETCH_GAMES"
 

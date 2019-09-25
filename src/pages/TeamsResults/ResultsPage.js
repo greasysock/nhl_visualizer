@@ -10,6 +10,12 @@ import {mergeSortComponents} from '../../helpers'
 const ResultsSection = ({calculationMethod}) =>{
     const games = useGames()
     const teams = useTeams()
+    if(games.length===0 && Object.keys(teams).length===0){
+        return (
+            <div></div>
+        )
+    }
+
     const results = calculationMethod(games, teams)
 
     const renderTeamRanks = () => {
