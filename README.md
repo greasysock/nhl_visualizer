@@ -1,68 +1,20 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# NHL Visualizer
 
-## Available Scripts
+This project pulls in NHL scheduling data from the 2018-2019 season with the results from each game and uses that data to locally compute a leaderboard using 2 ranking methods. 
 
-In the project directory, you can run:
+### Weighted Method
 
-### `npm start`
+At the start of the season each game is worth half and as the season progesses at about the halfway point every game begins to fully count. This is applied to both Massey's Method and Colley's Method.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Massey's Method
+https://www.masseyratings.com/theory/massey.htm
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+Each game's final score counts for the winner and loser. All games are summed up to create a final matrix which gives you a rough estimation for team ranks that all adds up to 0.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Colley's Method
+https://www.colleyrankings.com/method.html
 
-### `npm run build`
+No scores are used to weigh the games, only wins and loses count with this method. It would not matter if Team A wins by 5 one game and Team B wins by 1 point-- these two games would weigh the same in the final matrix.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Overall, both methods seem to mirror the official leaderboards so I am convinced that these methods work pretty well with the NHL, but there are probably better ranking methods used for the NHL.
