@@ -8,7 +8,7 @@ This project pulls in NHL scheduling data from the 2018-2019 season with the res
 
 ### Weighted Method
 
-At the start of the season each game is worth half and as the season progesses at about the halfway point every game begins to fully count. This is applied to both Massey's Method and Colley's Method.
+At the start of the season each game is worth half and as the season progresses to about the halfway point every game begins to fully count. This is applied to both Massey's Method and Colley's Method.
 
 ### Massey's Method
 https://www.masseyratings.com/theory/massey.htm
