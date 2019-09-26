@@ -1,5 +1,9 @@
 # NHL Visualizer
 
+<p align="center">
+  <img src="screenshots/graph_view.png">
+</p>
+
 This project pulls in NHL scheduling data from the 2018-2019 season with the results from each game and uses that data to locally compute a leaderboard using 2 ranking methods. 
 
 ### Weighted Method
