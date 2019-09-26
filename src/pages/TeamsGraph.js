@@ -1,6 +1,6 @@
 import React from 'react'
-import {useSelector} from 'react-redux'
 import Graph from 'react-graph-vis'
+import Dialog from '../components/Dialog'
 import useTeams from '../hooks/useTeams'
 import useGames from '../hooks/useGames'
 import {nhlLogoPath} from '../helpers'
@@ -35,7 +35,11 @@ const TeamsGraph = () => {
     const games = useGames()
     const nodes = renderNodes(Object.values(teams))
     const edges = renderEdges(games, teams)
-
+    if(Object.keys(teams).length > 10){
+        return (
+            <Dialog title='Too many teams selected to visualize'/>
+        )
+    }
     const graph = {
         nodes,edges
     }
